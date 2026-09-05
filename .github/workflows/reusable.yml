@@ -7,9 +7,18 @@ on:
         required: false
         default: dist
         type: string
+    # secrets:
+    #   some-secret:
+    #     required: false
+    outputs:
+      result:
+        description: The status of the deployment
+        value: ${{ jobs.deploy.outputs.outcome }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    outputs:
+      outcome: ${{ steps.set-result.outputs.step-result }}
     steps:
       - name: Get build artifacts
         uses: actions/download-artifact@v4
@@ -19,3 +28,11 @@ jobs:
         run: ls
       - name: output info
         run: echo "${{toJSON(github)}}"
+      - name: set result
+        id: set-result
+        run: echo "step-result=success" >> $GITHUB_OUTPUT
+
+  # - name: Set result
+  # id: set-result
+  # run: echo "::set-output name=step-result::success"
+  #old syntax deprecated
